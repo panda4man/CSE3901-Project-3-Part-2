@@ -1,0 +1,99 @@
+#!/bin/bash
+
+#check to make sure they only entered one argument
+if [ "$#" -ne 1 ]; then
+	echo "Usage: ./html_scrape <search_term>"
+	exit 1
+fi
+
+# job search query
+query="$1"
+
+echo "Searching for $query type jobs..."
+
+curl -L -s --max-time 60 --data "query=$query&591=1" https://www.jobsatosu.com/postings/search/ | sed -e '/^$/d' -e 's/^ *//' -e's/[[:space:]]*//' > "job_listings.html"
+
+counter=0
+open_div=0
+close_div=0
+
+#read through each line of the raw html
+while read line
+do
+	#see if we found job posting class in HTML
+	title=$(echo "$line" | grep 'data-posting-title')
+	if [ ! -z "$title" ]; then
+		counter=$[$counter+1]
+		open_div=$[$open_div+1]
+		echo -ne "Found $counter postings\r"
+
+		#echo the first line and then go to next loop iteration
+		echo "$line" >> output.html
+		continue
+	fi
+
+	# avoid all the other div tags until we hit the target class title 'data-posting-title'
+	if [ $open_div -eq 0 ] && [ $close_div -eq 0 ]; then
+		continue
+	fi
+
+	# we are in the posting block so echo to output.html
+	echo "$line" >> output.html
+
+	# grep for either an opening tag or a closing one
+	opening=$(echo "$line" | grep -o '<div')
+	closing=$(echo "$line" | grep -o '</div>')
+
+	# if we don't have a closing or opening tag then skip to next loop to save
+	#memory 
+	if [ -z "$opening" ] && [ -z "$closing" ]; then
+		continue
+	fi
+
+	# we found an opening div tag so increment the counter
+	if [ ! -z "$opening" ]; then
+		open_div=$[$open_div+1]
+		continue
+	fi
+	
+	# we found a closing div tag so increment the counter
+	if [ ! -z "$closing" ]; then
+		close_div=$[$close_div+1]
+	fi
+
+	# if our two counters are not 0 and they are equal then we hit the end of a posting block
+	if [ $open_div -eq $close_div ] && [ $open_div -ne 0 ] && [ $close_div -ne 0 ]; then
+		open_div=0
+		close_div=0
+		echo "END POSTING" >> output.html
+	fi
+done < "job_listings.html"
+
+# print out how many listings we found
+echo "Found a total of $counter postings."
+
+# get rid of the raw GET response HTML
+# rm "job_listings.html"
+
+# we didn't find any listings so exit
+if [ $counter -eq 0 ]; then
+	exit 1
+fi
+
+# grab each line where it doesn't start with a tag character and grab that data
+while read line
+do
+	is_tag=$(echo "$line" | grep -o "^<" )
+
+	if [ -z "$is_tag" ]; then
+		echo "$line"
+	else
+		posting_line=$(echo "$line" | grep 'job-actions')
+		if [ ! -z "$posting_line" ]; then
+			posting_number=$(echo "$posting_line" | grep -o "[0-9]" | tr -d '\n')
+			echo "$posting_number"
+		fi
+	fi
+done < "output.html"
+
+rm "output.html"
