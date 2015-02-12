@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #check to make sure they only entered one argument
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 2 ]; then
 	echo "Error!"
-	echo "Usage: ./html_scrape <job> <location> <your@emailaddress.com>"
+	echo "Usage: ./html_scrape <job> <location>"
 	exit 1
 fi
 
@@ -12,9 +12,6 @@ q_job="$1"
 
 # job search location
 q_location="$2"
-
-# email address to send to
-email="$3"
 
 # Set the location param query val
 case "$q_location" in
@@ -129,12 +126,16 @@ done < "job_listings.html"
 echo "Found a total of $counter postings."
 
 # get rid of the raw GET response HTML
-rm "job_listings.html"
+# rm "job_listings.html"
 
 # we didn't find any listings so exit
 if [ $counter -eq 0 ]; then
 	exit 1
 fi
+
+
+# set up a counter
+count=1
 
 # grab each line where it doesn't start with a tag character and grab that data
 while read line
@@ -142,12 +143,51 @@ do
 	is_tag=$(echo "$line" | grep -o "^<" )
 
 	if [ -z "$is_tag" ]; then
+
+		# check counter to see what the line is going to print
+		case "$count" in
+
+			"1")
+			echo "Work Title: $line " >> jobs.txt
+			;;
+
+			"2")
+			echo "Department: $line " >> jobs.txt
+			;;
+			
+			"3")
+			echo "Application Deadline: $line " >> jobs.txt
+			;;
+			
+			"4")
+			echo "Job Opening Number: $line " >> jobs.txt
+			;;
+			
+			"5")
+			echo "Target Salary: $line " >> jobs.txt
+			;;
+
+			"6")
+			echo "Description: $line " >> jobs.txt
+			;;
+
+			"7")
+			echo "--------------------------------------------------------------------------" >> jobs.txt
+			# this is the END POSTING line. reset the counter
+			count=0
+			;;
+
+			*)
+			;;
+			esac
+
 		echo "$line"
+		count=$[$count+1]
+
 	fi
 done < "output.html"
 
-# Send the mail
-mail -s "$q_job Job Listings in $q_location" $email < "./output.html"
-
 # remove the output.html
 rm "output.html"
+# rm "jobs.txt"
+
