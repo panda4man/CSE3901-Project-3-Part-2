@@ -193,6 +193,7 @@ done < "output.html"
 rm "output.html"
 
 mail -s "$q_job Jobs Found in $q_location" $email < ./jobs.txt
+echo "Job Listing email was sent to $email"
 
 # remove the jobs.txt
 rm "jobs.txt"
