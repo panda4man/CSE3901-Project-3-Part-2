@@ -133,6 +133,7 @@ rm "job_listings.html"
 
 # we didn't find any listings so exit
 if [ $counter -eq 0 ]; then
+	echo "No listings were found for $q_job. An email will not be sent. Now exiting."
 	exit 1
 fi
 
