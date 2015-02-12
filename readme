@@ -1,0 +1,14 @@
+html_scrape
+
+Our script takes 3 arguments.
+
+./html_scrape <arg1> <arg2> <arg3>
+
+Argument 1: Job Type
+	- what kind of job are you looking for (eg.. Management, CSS, HTML, etc..)
+
+Argument 2: Location
+	- where are you looking (eg. Columubs, Newark, Lima, etc..)
+
+Argument 3: Email Address
+	- where do you want the listings to be emailed to.
