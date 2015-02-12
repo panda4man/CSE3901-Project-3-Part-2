@@ -133,15 +133,61 @@ if [ $counter -eq 0 ]; then
 	exit 1
 fi
 
+
+# set up a counter
+count=1
+
 # grab each line where it doesn't start with a tag character and grab that data
 while read line
 do
 	is_tag=$(echo "$line" | grep -o "^<" )
 
 	if [ -z "$is_tag" ]; then
+
+		# check counter to see what the line is going to print
+		case "$count" in
+
+			"1")
+			echo "Work Title: $line " >> jobs.txt
+			;;
+
+			"2")
+			echo "Department: $line " >> jobs.txt
+			;;
+			
+			"3")
+			echo "Application Deadline: $line " >> jobs.txt
+			;;
+			
+			"4")
+			echo "Job Opening Number: $line " >> jobs.txt
+			;;
+			
+			"5")
+			echo "Target Salary: $line " >> jobs.txt
+			;;
+
+			"6")
+			echo "Description: $line " >> jobs.txt
+			;;
+
+			"7")
+			echo "--------------------------------------------------------------------------" >> jobs.txt
+			# this is the END POSTING line. reset the counter
+			count=0
+			;;
+
+			*)
+			;;
+			esac
+
 		echo "$line"
+		count=$[$count+1]
+
 	fi
 done < "output.html"
 
 # remove the output.html
-# rm "output.html"
+rm "output.html"
+# rm "jobs.txt"
+
