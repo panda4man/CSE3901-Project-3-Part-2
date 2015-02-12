@@ -96,4 +96,5 @@ do
 	fi
 done < "output.html"
 
-rm "output.html"
+# remove the output.html
+# rm "output.html"
