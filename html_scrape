@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #check to make sure they only entered one argument
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 3 ]; then
 	echo "Error!"
-	echo "Usage: ./html_scrape <job> <location>"
+	echo "Usage: ./html_scrape <job> <location> <email>"
 	exit 1
 fi
 
@@ -12,6 +12,9 @@ q_job="$1"
 
 # job search location
 q_location="$2"
+
+# email
+email="$3"
 
 # Set the location param query val
 case "$q_location" in
@@ -126,7 +129,7 @@ done < "job_listings.html"
 echo "Found a total of $counter postings."
 
 # get rid of the raw GET response HTML
-# rm "job_listings.html"
+rm "job_listings.html"
 
 # we didn't find any listings so exit
 if [ $counter -eq 0 ]; then
@@ -181,7 +184,6 @@ do
 			;;
 			esac
 
-		echo "$line"
 		count=$[$count+1]
 
 	fi
@@ -189,5 +191,9 @@ done < "output.html"
 
 # remove the output.html
 rm "output.html"
-# rm "jobs.txt"
+
+mail -s "$q_job Jobs Found in $q_location" $email < ./jobs.txt
+
+# remove the jobs.txt
+rm "jobs.txt"
 
