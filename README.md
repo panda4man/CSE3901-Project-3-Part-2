@@ -5,9 +5,5 @@
 **Usage:**
 
 ````
-./html_scrape <job-query>
+./html_scrape <job> <location> <your@emailaddress.com>
 ````
-
-
-
-

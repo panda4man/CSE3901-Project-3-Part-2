@@ -1,0 +1,18 @@
+Authors: Andrew Clinton, Dustin Stanley
+Description: This document contains how this bash script was developed and how it was tested for validity.
+
+================
+
+Step 1: We chose the http://jobsatosu.com site to do our html scraping on.
+
+Step 2: Had to figure out how the query paramaters were passed in the url by running a test query on the site.
+
+Step 3: Decided what query parameters we wanted to expose as dynamic options in our bash script. At first we only had the job title as the only search parameter, and we hard coded Columbus as the default location. To execute the program you did as follows:
+
+./html_scrape <job>
+
+The output of this curl was echo'd into an html file <job_listings.html> which could be used for parsing the data we wanted. This file can be seen in the testing folder. Additional sed commands were used to strip out any leading spaces/tabs at the beginning of every new line.
+
+Step 4: Now, having a flat html file, we needed to pull just the job listing html out of the curl response. This was done by noting the css class <data-posting-title> which marked the beginning of a new job posting block. Then loop through all of the DOM elements until we found the closing div for each section and spitting all that html into a separate file <output.html>. An example of this file can be found in the test folder.
+
+Step 5: At this point we noticed that all relavant data did not begin on a line which started with an HTML tag, so we looped through each line of output.html and pulled out, using a grep command, each line which did not start with a "<" character.
