@@ -140,12 +140,6 @@ do
 
 	if [ -z "$is_tag" ]; then
 		echo "$line"
-	else
-		posting_line=$(echo "$line" | grep 'job-actions')
-		if [ ! -z "$posting_line" ]; then
-			posting_number=$(echo "$posting_line" | grep -o "[0-9]" | tr -d '\n')
-			echo "$posting_number"
-		fi
 	fi
 done < "output.html"
 
