@@ -2,7 +2,8 @@
 
 #check to make sure they only entered one argument
 if [ "$#" -ne 2 ]; then
-	echo "Usage: ./html_scrape <search_term>"
+	echo "Error!"
+	echo "Usage: ./html_scrape <job> <location>"
 	exit 1
 fi
 
