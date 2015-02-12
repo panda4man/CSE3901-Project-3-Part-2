@@ -1,17 +1,69 @@
 #!/bin/bash
 
 #check to make sure they only entered one argument
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 2 ]; then
 	echo "Usage: ./html_scrape <search_term>"
 	exit 1
 fi
 
 # job search query
-query="$1"
+q_job="$1"
 
-echo "Searching for $query type jobs..."
+# job search location
+q_location="$2"
 
-curl -L -s --max-time 60 --data "query=$query&591=1" https://www.jobsatosu.com/postings/search/ | sed -e '/^$/d' -e 's/^ *//' -e's/[[:space:]]*//' > "job_listings.html"
+# Set the location param query val
+case "$q_location" in
+
+	"Columbus")
+		q_location_num=1
+		;;
+
+	"Lima")
+		q_location_num=2
+		;;
+
+	"Mansfield")
+		q_location_num=3
+		;;
+
+	"Marion")
+		q_location_num=4
+		;;
+
+	"Newark")
+		q_location_num=5
+		;;
+
+	"Wooster")
+		q_location_num=6
+		;;
+
+	"Delaware")
+		q_location_num=8
+		;;
+
+	"Springfield")
+		q_location_num=9
+		;;
+
+	"Piketon")
+		q_location_num=10
+		;;
+
+	"Dayton")
+		q_location_num=11
+		;;
+
+	*)
+		echo "You did not enter a valid location in Ohio. Please try again."
+		exit 1
+		;;
+	esac
+
+echo "Searching for $q_job type jobs in $q_location..."
+
+curl -L -s --max-time 60 --data "query=$q_job&591=$q_location_num" https://www.jobsatosu.com/postings/search/ | sed -e '/^$/d' -e 's/^ *//' -e's/[[:space:]]*//' > "job_listings.html"
 
 counter=0
 open_div=0
