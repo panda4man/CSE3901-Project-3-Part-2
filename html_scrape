@@ -1,4 +1,7 @@
 #!/bin/bash
+# Authors: Dustin Stanley, Andrew Clinton
+# Description: This script runs queries on the jobsatosu.com site and sends the results
+# as an email the specified email address.
 
 #check to make sure they only entered one argument
 if [ "$#" -ne 3 ]; then
